@@ -1,0 +1,174 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Notas UC</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<header>
+    <h1>Sistema de Gestión de Notas</h1>
+    <p>Proyecto académico - Universidad Continental</p>
+</header>
+
+<main>
+
+    <section class="panel">
+        <h2>Bienvenido al sistema</h2>
+        <p>
+            Plataforma académica para administrar
+            estudiantes, cursos y calificaciones.
+        </p>
+
+        <div class="opciones">
+
+            <div class="tarjeta">
+                <h3>Estudiantes</h3>
+                <p>Registro y consulta de estudiantes.</p>
+            </div>
+
+            <div class="tarjeta">
+                <h3>Cursos</h3>
+                <p>Administración de cursos académicos.</p>
+            </div>
+
+            <div class="tarjeta">
+                <h3>Notas</h3>
+                <p>Registro y seguimiento de calificaciones.</p>
+            </div>
+
+        </div>
+    </section>
+
+    {% if user.is_staff %}
+    <section class="panel panel-notas">
+
+        <h2>Registrar nueva nota</h2>
+
+        <form id="form-nota">
+            <input type="hidden" id="nota-id" value="">
+            {% csrf_token %}
+
+            <div class="campo">
+                <label for="estudiante">Estudiante</label>
+
+                <select id="estudiante" required>
+                    <option value="">Seleccione un estudiante</option>
+
+                    {% for estudiante in estudiantes %}
+                    <option value="{{ estudiante.id }}">
+                        {{ estudiante.nombres }}
+                        {{ estudiante.apellidos }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="curso">Curso</label>
+
+                <select id="curso" required>
+                    <option value="">Seleccione un curso</option>
+
+                    {% for curso in cursos %}
+                    <option value="{{ curso.id }}">
+                        {{ curso.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="calificacion">Calificación</label>
+
+                <input
+                    type="number"
+                    id="calificacion"
+                    min="0"
+                    max="20"
+                    step="0.01"
+                    placeholder="Ejemplo: 17.50"
+                    required
+                >
+            </div>
+
+            <div class="campo">
+                <label for="periodo">Periodo académico</label>
+
+                <input
+                    type="text"
+                    id="periodo"
+                    maxlength="20"
+                    placeholder="Ejemplo: 2026-II"
+                    required
+                >
+            </div>
+
+            <button type="submit" id="boton-guardar">
+                Guardar nota
+            </button>
+
+            <button type="button" id="boton-cancelar"
+                    class="boton-cancelar" hidden>
+                Cancelar edición
+            </button>
+
+            <p id="mensaje-formulario"
+               role="status"
+               aria-live="polite"></p>
+        </form>
+
+    </section>
+    {% else %}
+    <section class="panel panel-notas">
+        <p>
+            Para registrar calificaciones debes ingresar
+            con una cuenta administrativa autorizada.
+        </p>
+        <a href="/admin/login/">Iniciar sesión</a>
+    </section>
+    {% endif %}
+
+    <section class="panel panel-notas">
+
+        <h2>Registro de calificaciones</h2>
+
+        <p id="mensaje-notas" role="status" aria-live="polite">
+            Cargando notas...
+        </p>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Curso</th>
+                        <th>Nota</th>
+                        <th>Periodo</th>
+                        <th>Estado</th>
+                        {% if user.is_staff %}
+                        <th>Acciones</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody id="tabla-notas"></tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>Gestión de Notas UC - Proyecto universitario 2026</p>
+</footer>
+
+<script src="{% static 'js/app.js' %}"></script>
+
+</body>
+</html>
